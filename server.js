@@ -4,6 +4,7 @@ const auth = require('./route/authRoute.js')
 const user = require('./route/userRoute.js')
 const folder = require('./route/folderRoute.js')
 const topic = require('./route/topicRoute.js')
+const word = require('./route/wordRoute.js')
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -13,6 +14,7 @@ app.use('/auth', auth)
 app.use('/user', user)
 app.use('/folder', folder)
 app.use('/topic', topic)
+app.use('/word', word)
 
 const PORT = process.env.PORT || 8080
 app.listen(PORT, () => {

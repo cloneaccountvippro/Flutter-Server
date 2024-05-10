@@ -17,7 +17,7 @@ async function SignUp(UserCredential) {
     try {
         const { email, password } = UserCredential;
         const userRecord = await createUserWithEmailAndPassword(auth, email, password);
-        return userRecord;
+        return userRecord.user.id;
     } catch (error) {
         throw error;
     }
