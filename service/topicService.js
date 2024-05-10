@@ -4,10 +4,15 @@ const db = admin.firestore();
 async function createTopicAndAddToFolder(topicName, folderId) {
     try {
         // Create a new topic instance
-        const topic = new Topic(topicName, folderId);
+        const TopicData = {
+            name: topicName,
+            folderId: folderId,
+            testId: [],
+            wordId:[]
+        };
 
         // Add the topic to Firestore with auto-generated ID
-        const topicRef = await db.collection("topics").add(topic);
+        const topicRef = await db.collection("topics").add(TopicData);
 
         // Update the corresponding folder document with the new topic ID
         const folderRef = db.collection("folders").doc(folderId);
@@ -34,7 +39,18 @@ async function getTopicsByFolderId(folderId) {
     }
 }
 
+async function updateTopicName(topicId, newName) {
+    try {
+        const topicRef = db.collection("topics").doc(topicId);
+        await topicRef.update({ name: newName });
+        console.log("Topic name updated successfully");
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     createTopicAndAddToFolder,
-    getTopicsByFolderId
+    getTopicsByFolderId,
+    updateTopicName
 }

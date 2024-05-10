@@ -1,13 +1,17 @@
 const admin = require("firebase-admin");
 const db = admin.firestore();
-
+const Folder = require("../model/folder");
 async function createFolder(userId, folderName) {
     try {
         // Create a new folder instance
-        const folder = new Folder(folderName, userId);
+        const folderData = {
+            name: folderName,
+            userId: userId,
+            topicId: []  // Initialize topicId as an empty array
+        };
 
         // Add the folder to Firestore with auto-generated ID
-        const folderRef = await db.collection("folders").add(folder);
+        const folderRef = await db.collection("folders").add(folderData);
 
         // Get the user document
         const userRef = db.collection("users").doc(userId);
@@ -27,6 +31,7 @@ async function createFolder(userId, folderName) {
         throw error;
     }
 }
+
 
 async function getAllFolders() {
     try {

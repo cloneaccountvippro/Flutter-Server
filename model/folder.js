@@ -5,3 +5,5 @@ class Folder{
         this.topicId = topicId
     }
 }
+
+module.exports = Folder
