@@ -1,8 +1,6 @@
 class Topic {
-    constructor(name, folderId, testId = [], wordId = []) {
+    constructor(name, folderId) {
         this.name = name
         this.folderId = folderId
-        this.testId = testId
-        this.wordId = wordId
     }
 }

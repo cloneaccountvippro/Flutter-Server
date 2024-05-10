@@ -7,8 +7,6 @@ async function createTopicAndAddToFolder(topicName, folderId) {
         const TopicData = {
             name: topicName,
             folderId: folderId,
-            testId: [],
-            wordId:[]
         };
 
         // Add the topic to Firestore with auto-generated ID
