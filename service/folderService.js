@@ -59,8 +59,48 @@ async function getFoldersByUserId(userId) {
     }
 }
 
+async function updateFolderName(folderId, newName) {
+    try {
+        const folderRef = db.collection("folders").doc(folderId);
+
+        // Update the folder document with the new name
+        await folderRef.update({ name: newName });
+
+        console.log("Folder name updated successfully");
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function deleteFolder(folderId) {
+    try {
+        const folderRef = db.collection("folders").doc(folderId);
+
+        // Check if the folder has any associated topic IDs
+        const folderSnapshot = await folderRef.get();
+        if (!folderSnapshot.exists) {
+            throw new Error("Folder not found");
+        }
+
+        const topicIds = folderSnapshot.data().topicId;
+        if (topicIds.length > 0) {
+            throw new Error("Folder cannot be deleted as it has associated topic(s)");
+        }
+
+        // Delete the folder document
+        await folderRef.delete();
+
+        console.log("Folder deleted successfully");
+    } catch (error) {
+        throw error;
+    }
+}
+
+
 module.exports = {
     createFolder,
     getAllFolders,
-    getFoldersByUserId
+    getFoldersByUserId,
+    updateFolderName,
+    deleteFolder
 }

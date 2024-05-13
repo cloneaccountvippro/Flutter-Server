@@ -34,4 +34,27 @@ router.get('/all/:userId', async (req, res) => {
     }
 });
 
+// Endpoint to update a folder
+router.put('/update/:folderId', async (req, res) => {
+    const folderId = req.params.folderId;
+    const { newFolderName } = req.body;
+    try {
+        await folderService.updateFolderName(folderId, newFolderName);
+        res.status(200).json({ message: 'Folder updated successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+})
+
+// Endpoint to delete a folder
+router.delete('/delete/:folderId', async (req, res) => {
+    const folderId = req.params.folderId;
+    try {
+        await folderService.deleteFolder(folderId);
+        res.status(200).json({ message: 'Folder deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+})
+
 module.exports = router;
