@@ -57,4 +57,13 @@ router.post('/public/:topicId', async (req, res) => {
     }
 })
 
+router.get('/get-all', async (req, res) => {
+    try {
+        const topics = await topicService.getAllTopics();
+        res.status(200).json(topics);
+    } catch (error) {
+        throw error
+    }
+})
+
 module.exports = router;

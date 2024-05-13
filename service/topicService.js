@@ -90,10 +90,24 @@ async function toggleTopicPublic(topicId) {
     }
 }
 
+async function getAllTopics() {
+    try {
+        const snapshot = await db.collection("topics").get();
+        const topics = [];
+        snapshot.forEach(doc => {
+            topics.push({ id: doc.id, ...doc.data() });
+        });
+        return topics;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     createTopicAndAddToFolder,
     getTopicsByFolderId,
     updateTopicName,
     deleteTopic,
-    toggleTopicPublic
+    toggleTopicPublic,
+    getAllTopics
 }
