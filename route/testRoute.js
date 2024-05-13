@@ -6,7 +6,8 @@ const {
     startMCQTest,
     startQuizTest,
     completeMCQTest,
-    completeQuizTest
+    completeQuizTest,
+    getTestsByTopicWithUserFullName
 } = require('../service/testService')
 
 // Route to get tests by user ID
@@ -71,6 +72,16 @@ router.post('/complete-quiz-test', async (req, res) => {
         const result = await completeQuizTest(testId, timeTaken);
         res.status(200).json(result);
     } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+})
+
+router.get('/get-topic-scoreboard/:topicId', async (req, res) => {
+    const topicId = req.params.topicId
+    try {
+        const tests = await getTestsByTopicWithUserFullName(topicId)
+        res.status(200).json(tests)
+    } catch(error){
         res.status(500).json({ error: error.message });
     }
 })
