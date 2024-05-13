@@ -15,7 +15,12 @@ async function addWord(word, vocab, meaning, topicId) {
         
         // Add the word to Firestore
         const wordRef = await db.collection("words").add(wordData);
-        
+
+        const topicRef = db.collection("topics").doc(topicId);
+        await topicRef.update({
+            wordId: admin.firestore.FieldValue.arrayUnion(wordRef.id)
+        });
+
         console.log("Word added successfully");
         return wordRef.id; // Return the ID of the newly added word
     } catch (error) {

@@ -36,4 +36,25 @@ router.put('/update/:topicId', async (req, res) => {
     }
 });
 
+// Delete topic by topic ID
+router.delete('/delete/:topicId', async (req, res) => {
+    const topicId = req.params.topicId;
+    try {
+        await topicService.deleteTopic(topicId);
+        res.status(200).json({ message: 'Topic deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+})
+
+router.post('/public/:topicId', async (req, res) => {
+    const topicId = req.params.topicId;
+    try {
+        await topicService.toggleTopicPublic(topicId);
+        res.status(200).json({ message: 'Topic visibility toggled successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });   
+    }
+})
+
 module.exports = router;
