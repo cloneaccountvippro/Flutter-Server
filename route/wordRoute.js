@@ -1,6 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { addWord, addWordFromCSV, editWord, searchWordByLetter, searchWordsByTopic} = require('../service/wordService');
+const { 
+    addWord, 
+    addWordFromCSV, 
+    editWord, 
+    getWordById, 
+    deleteWord, 
+    searchWordByLetter, 
+    searchWordsByTopic, 
+    exportWordsToCSV
+} = require('../service/wordService');
 const multer = require('multer');
 
 // Multer configuration for file upload
@@ -40,6 +49,8 @@ router.put('/edit/:wordId', async (req, res) => {
     }
 });
 
+//
+
 // Route to search for a word by its 'word' field
 router.get('/search', async (req, res) => {
     const query = req.query.q;
@@ -51,6 +62,7 @@ router.get('/search', async (req, res) => {
     }
 });
 
+// Route to search for words by topic
 router.get('/search/:topicId', async (req, res) => {
     const topicId = req.params.topicId;
     try {
@@ -60,4 +72,42 @@ router.get('/search/:topicId', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+// Route to delete a word by its ID
+router.delete('/delete/:wordId', async (req, res) => {
+    const wordId = req.params.wordId;
+    try {
+        await deleteWord(wordId);
+        res.status(200).json({ message: "Word deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+// Route to get a word by its ID
+router.get('/get/:wordId', async (req, res) => {
+    const wordId = req.params.wordId;
+    try {
+        const word = await getWordById(wordId);
+        res.status(200).json(word);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Route to export words to CSV by topic
+router.get('/export-to-csv/:topicId', async (req, res) => {
+    const topicId = req.params.topicId;
+    try {
+        const csvData = await exportWordsToCSV(topicId);
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename=words.csv');
+        res.status(200).send(csvData);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
 module.exports = router;
