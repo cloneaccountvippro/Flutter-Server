@@ -7,9 +7,11 @@ const topic = require('./route/topicRoute.js')
 const word = require('./route/wordRoute.js')
 const question = require('./route/questionRoute.js')
 const test = require('./route/testRoute.js')
+const cors = require('cors')
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(cors())
 
 //Route
 app.use('/auth', auth)
