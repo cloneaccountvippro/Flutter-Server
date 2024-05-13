@@ -34,7 +34,8 @@ async function getWordById(wordId) {
         if (!wordSnapshot.exists) {
             throw new Error("Word not found");
         }
-        return wordSnapshot.data();
+        const wordData = wordSnapshot.data();
+        return { id: wordSnapshot.id, ...wordData }; // Include the word ID in the returned object
     } catch (error) {
         throw error;
     }
