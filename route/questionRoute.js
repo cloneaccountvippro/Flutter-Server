@@ -3,8 +3,7 @@ const router = express.Router();
 const {
     createMCQ,
     createQuiz,
-    checkMCQResult,
-    checkQuizResult
+    checkResult,
 } = require('../service/questionService');
 
 // Route to create multiple-choice questions (MCQ)
@@ -30,22 +29,11 @@ router.post('/quiz', async (req, res) => {
 });
 
 // Route to check the result of an MCQ question
-router.post('/check-mcq-result', async (req, res) => {
-    const { questionId, answer } = req.body;
+router.post('/check-question-result', async (req, res) => {
+    const { testId, questionId, answer, userId } = req.body;
     try {
-        const result = await checkMCQResult(questionId, answer);
+        const result = await checkResult(testId, questionId, answer, userId);
         res.status(200).json(result);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Route to check the result of a quiz question
-router.post('/check-quiz-result', async (req, res) => {
-    const { questionId, answer } = req.body;
-    try {
-        const isCorrect = await checkQuizResult(questionId, answer);
-        res.status(200).json({ isCorrect });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

@@ -52,16 +52,9 @@ async function createMCQ(testId, topicId){
             question.options = shuffleArray(options);
             question.inCorrectAnswers = incorrectAnswers;
 
-            
-            questions.push(question);
+            const questionRef = await db.collection("tests").doc(testId).collection("questions").add(question);
+            questions.push({ id: questionRef.id, ...question });
         }
-
-        const batch = db.batch();
-        questions.forEach(question => {
-            const questionRef = db.collection("tests").doc(testId).collection("questions").doc();
-            batch.set(questionRef, question);
-        });
-        await batch.commit();
 
         return questions
     } catch (error) {
@@ -99,60 +92,41 @@ async function createQuiz(testId, topicId) {
                 inCorrectAnswers: [],
                 options: []
             };
+            const questionRef = await db.collection("tests").doc(testId).collection("questions").add(question);
+            questions.push({ id: questionRef.id, ...quiz });
+
             quizes.push(quiz);
         }
-        const batch = db.batch();
-        quizes.forEach(quiz => {
-            const quizRef = db.collection("tests").doc(testId).collection("questions").doc();
-            batch.set(quizRef, quiz);
-        });
-        await batch.commit();
-
         return quizes;
     } catch (error) {
         throw error;
     }
 }
 
-async function checkMCQResult(questionId, answer, userId) {
+async function checkResult(testId, questionId, answer, userId) {
     try {
-        const questionDoc = await db.collection("questions").doc(questionId).get();
+        const questionRef = db.collection("tests").doc(testId).collection("questions").doc(questionId);
+        const questionDoc = await questionRef.get();
         if (!questionDoc.exists) {
             throw new Error("Question not found");
         }
-        
-        const correctAnswer = questionDoc.data().correctAnswer;
 
-        const isCorrect = answer === correctAnswer;
-        if(isCorrect){
-            await addTrainedId(questionDoc.data().wordId, userId)
+        const isCorrect = answer === questionDoc.data().correctAnswer;
+
+        if (isCorrect) {
+            await addTrainedId(userId, questionDoc.data().wordId);
+            await questionRef.update({ isCorrect: true });
         }
-        return { isCorrect, correctAnswer };
+
+        return isCorrect;
     } catch (error) {
         throw error;
     }
 }
 
-async function checkQuizResult(questionId, answer, userId) {
-    try {
-        const question = await db.collection("questions").doc(questionId).get();
-        if(!question.exists){
-            throw new Error("Question not found")
-        }
-
-        const isCorrect = answer === question.correctAnswer
-        if(isCorrect){
-            await addTrainedId(question.data().wordId, userId)
-        }
-        return isCorrect
-    } catch (error) {
-        
-    }
-}
 
 module.exports = {
     createMCQ,
     createQuiz,
-    checkMCQResult,
-    checkQuizResult
+    checkResult,
 }
