@@ -92,10 +92,8 @@ async function createQuiz(testId, topicId) {
                 inCorrectAnswers: [],
                 options: []
             };
-            const questionRef = await db.collection("tests").doc(testId).collection("questions").add(question);
-            questions.push({ id: questionRef.id, ...quiz });
-
-            quizes.push(quiz);
+            const questionRef = await db.collection("tests").doc(testId).collection("quizs").add(quiz);
+            quizes.push({ id: questionRef.id, ...quiz });
         }
         return quizes;
     } catch (error) {
