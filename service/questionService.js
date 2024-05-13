@@ -101,7 +101,7 @@ async function createQuiz(testId, topicId) {
     }
 }
 
-async function checkResult(testId, questionId, answer, userId) {
+async function checkMCQResult(testId, questionId, answer, userId) {
     try {
         const questionRef = db.collection("tests").doc(testId).collection("questions").doc(questionId);
         const questionDoc = await questionRef.get();
@@ -122,9 +122,30 @@ async function checkResult(testId, questionId, answer, userId) {
     }
 }
 
+async function checkQuizResult(testId, questionId, answer, userId) {
+    try {
+        const questionRef = db.collection("tests").doc(testId).collection("quizs").doc(questionId);
+        const questionDoc = await questionRef.get();
+        if (!questionDoc.exists) {
+            throw new Error("Question not found");
+        }
+
+        const isCorrect = answer === questionDoc.data().correctAnswer;
+
+        if (isCorrect) {
+            await addTrainedId(userId, questionDoc.data().wordId);
+            await questionRef.update({ isCorrect: true });
+        }
+
+        return isCorrect;
+    } catch (error) {
+        throw error;
+    }
+}
 
 module.exports = {
     createMCQ,
     createQuiz,
-    checkResult,
+    checkMCQResult,
+    checkQuizResult
 }
