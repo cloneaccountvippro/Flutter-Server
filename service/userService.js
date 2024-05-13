@@ -1,6 +1,6 @@
 const admin = require("firebase-admin");
 const db = admin.firestore();
-
+const { getWordById } = require("./wordService");
 async function saveUserData(uid, UserInfoModel){
     try{
         // Initialize trainedId and markedId as empty arrays if not provided
@@ -94,22 +94,63 @@ async function addMarkedId(uid, markedId) {
     }
 }
 
-async function addFolderId(uid, folderId) {
+async function getAllMarkedId(uid) {
     try {
-        if (!folderId) {
-            throw new Error("Trained ID is required");
+        const userData = await getUserData(uid);
+        if (!userData.exists) {
+            throw new Error("User does not exist");
         }
-
-        // Update the document by adding the markedId to the markedId array using Firestore arrayUnion
-        await db.collection("users").doc(uid).update({
-            folderId: admin.firestore.FieldValue.arrayUnion(folderId)
-        });
-
-        console.log("Folder ID added successfully");
+        
+        const markedId = userData.data().markedId || [];
+        return markedId;
     } catch (error) {
         throw error;
     }
 }
+
+async function getAllTrainedId(uid) {
+    try {
+        const userData = await getUserData(uid);
+        if (!userData.exists) {
+            throw new Error("User does not exist");
+        }
+        
+        const trainedId = userData.data().trainedId || [];
+        return trainedId;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getAllMarkedWords(uid) {
+    try {
+        const markedIds = await getAllMarkedId(uid);
+        const markedWords = [];
+        for (const markedId of markedIds) {
+            const word = await getWordById(markedId);
+            markedWords.push(word);
+        }
+        return markedWords;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getAllTrainedWords(uid) {
+    try {
+        const trainedIds = await getAllTrainedId(uid);
+        const trainedWords = [];
+        for (const trainedId of trainedIds) {
+            const word = await getWordById(trainedId);
+            trainedWords.push(word);
+        }
+        return trainedWords;
+    } catch (error) {
+        throw error;
+    }
+}
+
+
 
 module.exports = {
     saveUserData,
@@ -117,5 +158,6 @@ module.exports = {
     updateUserData,
     addTrainedId,
     addMarkedId,
-    addFolderId
+    getAllMarkedWords,
+    getAllTrainedWords
 }

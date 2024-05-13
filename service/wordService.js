@@ -23,6 +23,18 @@ async function addWord(word, vocab, meaning, topicId) {
     }
 }
 
+async function getWordById(wordId) {
+    try {
+        const wordSnapshot = await db.collection("words").doc(wordId).get();
+        if (!wordSnapshot.exists) {
+            throw new Error("Word not found");
+        }
+        return wordSnapshot.data();
+    } catch (error) {
+        throw error;
+    }
+}
+
 async function addWordFromCSV(fileBuffer, topicId){
     try {
         var initialData = JSON.parse(JSON.stringify(fileBuffer));
@@ -89,11 +101,41 @@ async function searchWordsByTopic(topicId) {
     }
 }
 
+async function deleteWord(wordId) {
+    try {
+        await db.collection("words").doc(wordId).delete();
+        console.log("Word deleted successfully");
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function exportWordsToCSV(topicId) {
+    try {
+        const snapshot = await db.collection("words").where("topicId", "==", topicId).get();
+        const words = [];
+
+        snapshot.forEach(doc => {
+            words.push(doc.data());
+        });
+
+        const csvData = words.map(word => {
+            return `${word.word},${word.vocab},${word.meaning}`;
+        }).join('\n');
+
+        return csvData;
+    } catch (error) {
+        throw error;
+    }
+}
 
 module.exports = {
     addWord,
     addWordFromCSV,
     editWord,
+    deleteWord,
+    getWordById,
     searchWordByLetter,
-    searchWordsByTopic
+    searchWordsByTopic,
+    exportWordsToCSV
 };
