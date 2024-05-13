@@ -4,7 +4,9 @@ const {
     getTestByUser,
     getTestByTopic,
     startMCQTest,
-    startQuizTest
+    startQuizTest,
+    completeMCQTest,
+    completeQuizTest
 } = require('../service/testService')
 
 // Route to get tests by user ID
@@ -50,5 +52,27 @@ router.post('/start-quiz-test', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+// Complete MCQ test
+router.post('/complete-mcq-test', async (req, res) => {
+    const { testId, timeTaken } = req.body;
+    try {
+        const result = await completeMCQTest(testId, timeTaken);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Complete Quiz test
+router.post('/complete-quiz-test', async (req, res) => {
+    const { testId, timeTaken } = req.body;
+    try {
+        const result = await completeQuizTest(testId, timeTaken);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+})
 
 module.exports = router

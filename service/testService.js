@@ -31,10 +31,6 @@ async function getTestByTopic(topicId){
     }
 }
 
-async function completeMCQTest(result, timeCompleted){
-    
-}
-
 async function startMCQTest(userId, topicId){
     try {
         const testRef = await db.collection("tests").add({
@@ -75,13 +71,67 @@ async function startQuizTest(userId, topicId){
     }
 }
 
-async function completeQuizTest(result, timeCompleted){
+async function completeQuizTest(testId, timeCompleted) {
+    try {
+        const testRef = db.collection("tests").doc(testId);
+        const testSnapshot = await testRef.get();
+        if (!testSnapshot.exists) {
+            throw new Error("Test not found");
+        }
 
+        const questionsRef = testRef.collection("quizs");
+        const questionsSnapshot = await questionsRef.get();
+        const totalQuestions = questionsSnapshot.docs.length;
+
+        let correctCount = 0;
+        questionsSnapshot.forEach(doc => {
+            const questionData = doc.data();
+            if (questionData.isCorrect) {
+                correctCount++;
+            }
+        });
+
+        await testRef.update({ result: correctCount, timeCompleted: timeCompleted });
+
+        console.log("Quiz test completed successfully");
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function completeMCQTest(testId, timeCompleted) {
+    try {
+        const testRef = db.collection("tests").doc(testId);
+        const testSnapshot = await testRef.get();
+        if (!testSnapshot.exists) {
+            throw new Error("Test not found");
+        }
+
+        const questionsRef = testRef.collection("questions");
+        const questionsSnapshot = await questionsRef.get();
+        const totalQuestions = questionsSnapshot.docs.length;
+
+        let correctCount = 0;
+        questionsSnapshot.forEach(doc => {
+            const questionData = doc.data();
+            if (questionData.isCorrect) {
+                correctCount++;
+            }
+        });
+
+        await testRef.update({ result: correctCount, timeCompleted: timeCompleted });
+
+        console.log("MCQ test completed successfully");
+    } catch (error) {
+        throw error;
+    }
 }
 
 module.exports = {
     getTestByUser,
     getTestByTopic,
     startMCQTest,
-    startQuizTest
+    startQuizTest,
+    completeMCQTest,
+    completeQuizTest
 }
