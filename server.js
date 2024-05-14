@@ -1,5 +1,6 @@
 const express = require("express")
 const app = express();
+const cors = require('cors')
 const auth = require('./route/authRoute.js')
 const user = require('./route/userRoute.js')
 const folder = require('./route/folderRoute.js')
@@ -9,6 +10,7 @@ const question = require('./route/questionRoute.js')
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(cors())
 
 //Route
 app.use('/auth', auth)
