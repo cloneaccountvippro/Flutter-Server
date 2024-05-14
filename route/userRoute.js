@@ -6,7 +6,8 @@ const {
     updateUserData,
     addTrainedId,
     addMarkedId,
-    addFolderId
+    getAllTrainedWords,
+    getAllMarkedWords
 } = require('../service/userService.js'); 
 
 // Save user data route
@@ -70,17 +71,25 @@ router.post('/add-marked-word/:uid', async (req, res) => {
     }
 });
 
-// Add folderId route
-router.post('/add-folder-id/:uid', async (req, res) => {
+router.get('/get-all-marked-words/:uid', async (req, res) => {
     const uid = req.params.uid;
-    const { folderId } = req.body;
     try {
-        await addFolderId(uid, folderId);
-        res.status(200).json({ message: "Folder Id added successfully" });
+        const markedWords = await getAllMarkedWords(uid);
+        res.status(200).json({ markedWords });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
+
+router.get('/get-all-trained-words/:uid', async (req, res) => {
+    const uid = req.params.uid;
+    try {
+        const trainedWords = await getAllTrainedWords(uid);
+        res.status(200).json({ trainedWords });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+})
 
 
 module.exports = router

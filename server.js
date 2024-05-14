@@ -7,6 +7,8 @@ const folder = require('./route/folderRoute.js')
 const topic = require('./route/topicRoute.js')
 const word = require('./route/wordRoute.js')
 const question = require('./route/questionRoute.js')
+const test = require('./route/testRoute.js')
+const cors = require('cors')
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -19,6 +21,7 @@ app.use('/folder', folder)
 app.use('/topic', topic)
 app.use('/word', word)
 app.use('/question', question)
+app.use('/test', test)
 
 const PORT = process.env.PORT || 8080
 app.listen(PORT, () => {

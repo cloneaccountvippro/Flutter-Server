@@ -7,6 +7,8 @@ async function createTopicAndAddToFolder(topicName, folderId) {
         const TopicData = {
             name: topicName,
             folderId: folderId,
+            wordId: [],
+            public: true
         };
 
         // Add the topic to Firestore with auto-generated ID
@@ -47,8 +49,65 @@ async function updateTopicName(topicId, newName) {
     }
 }
 
+async function deleteTopic(topicId) {
+    try {
+        const topicRef = db.collection("topics").doc(topicId);
+        
+        // Check if the topic has associated word IDs
+        const topicSnapshot = await topicRef.get();
+        const wordIds = topicSnapshot.data().wordId || [];
+
+        if (wordIds.length > 0) {
+            throw new Error("Topic cannot be deleted because it has associated word IDs");
+        }
+
+        // Delete the topic document
+        await topicRef.delete();
+        console.log("Topic deleted successfully");
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function toggleTopicPublic(topicId) {
+    try {
+        const topicRef = db.collection("topics").doc(topicId);
+
+        // Get the current topic data
+        const topicSnapshot = await topicRef.get();
+        if (!topicSnapshot.exists) {
+            throw new Error("Topic not found");
+        }
+
+        const currentPublicStatus = topicSnapshot.data().public;
+
+        // Update the topic document to toggle its public status
+        await topicRef.update({ public: !currentPublicStatus });
+
+        console.log(`Topic ${topicId} public status toggled successfully`);
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getAllTopics() {
+    try {
+        const snapshot = await db.collection("topics").get();
+        const topics = [];
+        snapshot.forEach(doc => {
+            topics.push({ id: doc.id, ...doc.data() });
+        });
+        return topics;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     createTopicAndAddToFolder,
     getTopicsByFolderId,
-    updateTopicName
+    updateTopicName,
+    deleteTopic,
+    toggleTopicPublic,
+    getAllTopics
 }
