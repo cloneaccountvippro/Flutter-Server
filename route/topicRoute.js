@@ -47,6 +47,7 @@ router.delete('/delete/:topicId', async (req, res) => {
     }
 })
 
+// Update Topic Visibility
 router.post('/public/:topicId', async (req, res) => {
     const topicId = req.params.topicId;
     try {
@@ -57,6 +58,8 @@ router.post('/public/:topicId', async (req, res) => {
     }
 })
 
+
+// Get all Topic
 router.get('/get-all', async (req, res) => {
     try {
         const topics = await topicService.getAllTopics();

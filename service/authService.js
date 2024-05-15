@@ -17,7 +17,7 @@ async function SignUp(UserCredential) {
     try {
         const { email, password } = UserCredential;
         const userRecord = await createUserWithEmailAndPassword(auth, email, password);
-        return userRecord.user.id;
+        return userRecord.user.uid;
     } catch (error) {
         throw error;
     }
@@ -42,7 +42,6 @@ async function ResetPassword(email){
         throw error;
     }
 }
-
 
 module.exports = {
     SignUp,
