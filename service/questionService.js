@@ -133,6 +133,7 @@ async function checkQuizResult(testId, questionId, answer, userId) {
         const correctAnswer = questionDoc.data().correctAnswer.trim().toLowerCase();
         const providedAnswer = answer.toLowerCase().trim();
         const isCorrect = providedAnswer === correctAnswer;
+        console.log({correctAnswer, providedAnswer, isCorrect})
 
         if (isCorrect) {
             await addTrainedId(userId, questionDoc.data().wordId);
