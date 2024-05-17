@@ -39,7 +39,7 @@ async function createMCQ(testId, topicId){
             const question = {
                 testId: testId,
                 wordId: word.id,
-                question: `What is this ${word.word} mean in Vietnamese ?`,
+                question: `What is ${word.word} mean in Vietnamese ?`,
                 isCorrect: false,
                 correctAnswer: word.vocab,
                 inCorrectAnswers: [],
@@ -86,9 +86,9 @@ async function createQuiz(testId, topicId) {
             const quiz = {
                 testId: testId,
                 wordId: word.id,
-                question: `What is this ${word.word} mean in Vietnamese ?`,
+                question: `What is ${word.vocab} mean in English ?`,
                 isCorrect: false,
-                correctAnswer: word.vocab,
+                correctAnswer: word.word,
                 inCorrectAnswers: [],
                 options: []
             };
@@ -130,7 +130,9 @@ async function checkQuizResult(testId, questionId, answer, userId) {
             throw new Error("Question not found");
         }
 
-        const isCorrect = answer === questionDoc.data().correctAnswer;
+        const correctAnswer = questionDoc.data().correctAnswer.trim().toLowerCase();
+        const providedAnswer = answer.toLowerCase().trim();
+        const isCorrect = providedAnswer === correctAnswer;
 
         if (isCorrect) {
             await addTrainedId(userId, questionDoc.data().wordId);
@@ -142,6 +144,7 @@ async function checkQuizResult(testId, questionId, answer, userId) {
         throw error;
     }
 }
+
 
 module.exports = {
     createMCQ,
