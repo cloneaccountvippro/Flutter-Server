@@ -260,6 +260,35 @@ async function getTestsByTopicWithUserFullName(topicId) {
     }
 }
 
+async function getLatestTestsByUser(userId) {
+    try {
+        const testsSnapshot = await db.collection("tests")
+            .where("userId", "==", userId)
+            .orderBy("timeCreated", "desc")
+            .limit(3)
+            .get();
+
+        console.log(testsSnapshot)
+        const tests = [];
+
+        for (const doc of testsSnapshot.docs) {
+            const test = doc.data();
+
+            // Get the topic name based on topic ID
+            const topicSnapshot = await db.collection("topics").doc(test.topicId).get();
+            const topicName = topicSnapshot.exists ? topicSnapshot.data().name : "Unknown Topic";
+
+            // Add the topic name to the test data
+            test.topicName = topicName;
+            tests.push(test);
+        }
+
+        return tests;
+    } catch (error) {
+        throw error;
+    }
+}
+
 
 module.exports = {
     getTestByUser,
@@ -268,6 +297,7 @@ module.exports = {
     startQuizTest,
     completeMCQTest,
     completeQuizTest,
-    getTestsByTopicWithUserFullName
+    getTestsByTopicWithUserFullName,
+    getLatestTestsByUser
 }
 
