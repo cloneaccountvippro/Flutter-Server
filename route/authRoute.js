@@ -40,7 +40,7 @@ router.post("/signup", async (req,res) => {
     const { email, password } = req.body;
     const userCredential = { email, password };
     const {fullName, age, gender} = req.body;
-    const userInfoModel = {fullName, age, gender}
+    const userInfoModel = { fullName, age: parseInt(age, 10), gender };
     try {
         const credentialId = await SignUp(userCredential);
         await saveUserData(credentialId, userInfoModel)
