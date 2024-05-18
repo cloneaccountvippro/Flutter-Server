@@ -53,7 +53,9 @@ async function addWordFromCSV(fileBuffer, topicId){
             const columns = row.split(',');
 
             const [word, vocab, meaning] = columns;
-
+            if(word == undefined || vocab == undefined || meaning == undefined){
+                return;
+            }
             const wordData = {
                 word: word.trim(),     
                 vocab: vocab.trim(),
